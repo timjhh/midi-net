@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
-import Key from "./Key.jsx";
+import Keyboard from "./Keyboard.jsx";
 import * as d3 from 'd3';
 
-const NOTES = ["C", "D", "E", "F", "G", "A", "B"];
-const width = window.innerWidth;
-const height = window.innerHeight/6;
-const margin = {top: 20, right: 20, bottom: 20, left: 20};
 
-// onmidimessage
-function Keyboard(props) {
-
-
+function Controller(props) {
 
   var devs = [];
   const [inputs, setInputs] = useState(null);
@@ -22,23 +14,36 @@ function Keyboard(props) {
 
   useEffect(() => {
 
-    const svg = d3.select("#kbd")
-    .append("svg")
-    .attr("width",width)
-    .attr("height",height)
-    .append("g")
-    .attr("transform",
-      "translate(" + 0 + "," + height + ")");
+    navigator.requestMIDIAccess().then(midiSuccess);
 
 
-    svg.append("rect")
-    .attr("width", width)
-    .attr("height", 200)
-    .attr("class", "bar")
-    .attr("stroke", "black")
-    .attr("color", "white")
-    .attr("fill", "white");
+    function midiSuccess(access) {
 
+      access.inputs.forEach(d => {
+        devs.push(d);
+        d.onmidimessage = handleMessage;
+        setDevice(d);
+      });
+
+    }
+
+    function handleMessage(data) {
+      setStatus(data.data);
+      if(parseInt(data.data) != 248 && parseInt(data.data) != 254) {
+        console.log(data.data);
+        console.log(parseMsg(parseInt(data.data)));
+        setAction(parseMsg(parseInt(data.data)));
+      }
+      //let decoded = new TextDecoder().decode(data.data);
+      //console.log(decoded)
+      let msg = parseMsg(parseInt(status));
+
+      if(msg === 'noteon') {
+        console.log(msg);
+        setAction(msg);
+        console.log(status[1]);
+      }
+    }
   }, [])
 
   function parseMsg(data) {
@@ -72,21 +77,12 @@ function Keyboard(props) {
 
 
   return (
-    <div id="kbd">
-      {device && 
-        <p>{device.name}</p>
-      }
-      {status &&
-        <p>{parseMsg(status) === 'noteon' ? status[1] : 'no msg'}</p>
-      }
-      {action &&
-        <p>{action}</p>
-      }
+    <div className="">
 
-      <Key num={("key"+0).toString()} />
+      <Keyboard />
 
     </div>
   );
 }
 
-export default Keyboard;
+export default Controller;
