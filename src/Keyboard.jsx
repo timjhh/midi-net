@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import Key from "./Key.jsx";
+import { Piano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
+import 'react-piano/dist/styles.css';
+
 import * as d3 from 'd3';
 
 const NOTES = ["C", "D", "E", "F", "G", "A", "B"];
@@ -11,6 +14,10 @@ const margin = {top: 20, right: 20, bottom: 20, left: 20};
 // onmidimessage
 function Keyboard(props) {
 
+  // 16 - e0
+  // 28 - lowest key on keyboard
+  const firstNote = MidiNumbers.fromNote('e0');
+  const lastNote = MidiNumbers.fromNote('c8');
 
 
   var devs = [];
@@ -72,9 +79,23 @@ function Keyboard(props) {
 
 
   return (
+    <>
+    <Piano
+      noteRange={{ first: firstNote, last: lastNote }}
+      playNote={(midiNumber) => {
+        // Play a given note - see notes below
+      }}
+      stopNote={(midiNumber) => {
+        return 28;
+      }}
+      width={1000}
+
+    />
+
     <div id="kbd">
-      {device && 
-        <p>{device.name}</p>
+
+      {props.device && 
+        <p>{props.device.name}</p>
       }
       {status &&
         <p>{parseMsg(status) === 'noteon' ? status[1] : 'no msg'}</p>
@@ -86,6 +107,7 @@ function Keyboard(props) {
       <Key num={("key"+0).toString()} />
 
     </div>
+    </>
   );
 }
 

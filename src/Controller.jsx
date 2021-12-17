@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Keyboard from "./Keyboard.jsx";
-import * as d3 from 'd3';
+
 
 
 function Controller(props) {
@@ -31,18 +31,14 @@ function Controller(props) {
       setStatus(data.data);
       if(parseInt(data.data) != 248 && parseInt(data.data) != 254) {
         console.log(data.data);
-        console.log(parseMsg(parseInt(data.data)));
+        let msg = parseMsg(parseInt(data.data));
+        //console.log(parseMsg(parseInt(data.data)));
+        console.log(msg);
         setAction(parseMsg(parseInt(data.data)));
       }
-      //let decoded = new TextDecoder().decode(data.data);
-      //console.log(decoded)
-      let msg = parseMsg(parseInt(status));
 
-      if(msg === 'noteon') {
-        console.log(msg);
-        setAction(msg);
-        console.log(status[1]);
-      }
+      //let decoded = new TextDecoder().decode(data.data);
+
     }
   }, [])
 
@@ -79,7 +75,7 @@ function Controller(props) {
   return (
     <div className="">
 
-      <Keyboard />
+      <Keyboard device={device} />
 
     </div>
   );
